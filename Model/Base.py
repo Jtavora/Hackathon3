@@ -64,6 +64,7 @@ class AtividadeModel(Base):
     id = Column(String(36), primary_key=True, default=generate_uuid)
     name = Column(String(100), nullable=False)
     created_at = Column(DateTime, default=datetime.now)
+    descricao = Column(String(300))
 
     questoes = relationship("QuestaoModel", back_populates="atividade")
     alunos = relationship("AlunoModel", secondary=aluno_atividade_association, back_populates="atividades")
@@ -75,6 +76,16 @@ class AtividadeModel(Base):
             "created_at": self.created_at,
             "questoes": [questao.to_dict() for questao in self.questoes]
         }
+
+    @staticmethod
+    def cria_atividade(session, nome: str, questoes: list, descricao: str = None):
+        with session.begin():
+            atividade = AtividadeModel(name=nome, descricao=descricao)
+            for questao in questoes:
+                questao = QuestaoModel(name=questao["name"], gabarito=questao["gabarito"], enunciado=questao["enunciado"], pontuacao=questao["pontuacao"], id_atividade=atividade.id)
+                atividade.questoes.append(questao)
+            session.add(atividade)
+            return atividade
 
 class GrupoAtividadeModel(Base):
     __tablename__="grupo_atividade"
@@ -92,12 +103,13 @@ grupo_aluno_association = Table(
     UniqueConstraint('grupo_id', 'aluno_id', name='uix_grupo_aluno')
 )
 
+from sqlalchemy import Enum
+
 class StatusResposta(Enum):
     PENDENTE = "pendente"
     CORRETA = "correta"
     INCORRETA = "incorreta"
 
-from sqlalchemy import Enum
 
 class RespostaAluno(Base):
     __tablename__ = "respostas_aluno"
