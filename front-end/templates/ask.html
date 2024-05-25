@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente Virtual de Programação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: #007bff;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+        }
+        .chat-box {
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-box div {
+            margin-bottom: 10px;
+        }
+        .chat-box .user {
+            text-align: right;
+            color: blue;
+        }
+        .chat-box .assistant {
+            text-align: left;
+            color: green;
+        }
+        .chat-input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .chat-input-container button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .chat-input-container button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            Assistente Virtual de Programação
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="chat-input-container">
+            <input type="text" id="question" placeholder="Digite sua pergunta">
+            <input type="hidden" id="user_type" value="normal"> <!-- Adiciona tipo de usuário -->
+            <button onclick="sendMessage()">Enviar</button>
+            <button onclick="toggleRecognition()">🎤</button>
+        </div>
+        <div class="audio-player">
+            <audio controls id="audioPlayer">
+                <source src="path_to_your_mp3_file.mp3" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
+    
+    <script>
+        const userId = 'unique_user_id_123';  // Em um cenário real, isso deve ser gerado dinamicamente
+        let recognition;
+        let recognizing = false;
+
+        async function sendMessage() {
+            const questionInput = document.getElementById('question');
+            const question = questionInput.value;
+            const userType = 'deficiente_visual'; // Adiciona tipo de usuário
+            // const userType = document.getElementById('user_type').value;
+            if (!question) return;
+
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML += `<div class="user"><strong>Você:</strong> ${question}</div>`;
+            questionInput.value = '';
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    question: question,
+                    user_type: userType
+                })
+            })
+
+            if (userType === 'deficiente_visual') {
+                const data = await response.blob();
+                audioURL = URL.createObjectURL(data);
+                audioPlayer.src = audioURL;
+                audioPlayer.play();
+            } else {
+                const data = await response.json();
+                chatBox.innerHTML += `<div class="assistant"><strong>Monitor Jubileu:</strong> ${data.response}</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        document.getElementById('question').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function startRecognition() {
+            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'pt-BR';
+
+            recognition.onresult = function(event) {
+                const speechResult = event.results[0][0].transcript;
+                document.getElementById('question').value = speechResult;
+                sendMessage();
+            };
+
+            recognition.start();
+            recognizing = true;
+        }
+
+        function stopRecognition() {
+            if (recognition) {
+                recognition.stop();
+                recognizing = false;
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key.toLowerCase() === 'r' && !recognizing) {
+                startRecognition();
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.key.toLowerCase() === 'r' && recognizing) {
+                stopRecognition();
+            }
+        });
+    </script>
+</body>
+</html>

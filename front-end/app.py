@@ -4,10 +4,57 @@ from flask_bootstrap import Bootstrap
 from functools import wraps
 from flask import session
 import json
+# from openai import OpenAI
+from flask import Flask, request, send_file
+from pathlib import Path
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 app.secret_key = 'secret_key'  # Defina uma chave secreta para o Flash
+
+# client = OpenAI()
+user_contexts = {}
+
+def generate_assistant_response(user_id, student_query):
+    # Verifica se o usuário já tem um contexto armazenado, se não, inicializa um novo
+    if user_id not in user_contexts:
+        user_contexts[user_id] = [
+            {"role": "system", "content": (
+                "Você é um Assistente Virtual em uma sala de aula de programação online, e está ajudando alunos à fazer uma lista de exercicios. "
+                "Seu objetivo é ajudar os alunos a aprenderem de maneira eficaz, fornecendo orientações e dicas. "
+                "Você deve evitar fornecer respostas diretas ou código pronto, incentivando os alunos a pensarem "
+                "criticamente e resolverem os problemas por conta própria."
+                "Não utilize markdown ou qualquer outro tipo de formatação em hipotese alguma."
+                "Limite todas as respostas a 550 caracteres."
+            )}
+        ]
+
+    # Adiciona a pergunta do aluno ao contexto do usuário
+    user_contexts[user_id].append({"role": "user", "content": student_query})
+
+    # Fazendo a requisição para a API
+    response = client.chat.completions.create(model="gpt-4-turbo",
+    messages=user_contexts[user_id],
+    max_tokens=150,  # Limite de tokens para a resposta
+    n=1,
+    stop=None,
+    temperature=0.7)
+
+    # Extraindo a resposta gerada
+    assistant_response = response.choices[0].message.content
+
+    # Adiciona a resposta do assistente ao contexto do usuário
+    user_contexts[user_id].append({"role": "assistant", "content": assistant_response})
+
+    return assistant_response
+
+def generate_tts_response(text):
+    tts_response = client.audio.speech.create(
+        model="tts-1",
+        voice="alloy",
+        input=text
+        )
+    return tts_response
 
 def login_required(f):
     @wraps(f)
@@ -171,6 +218,29 @@ def criar_atividade():
         return redirect(url_for('index'))
     
     return render_template('criar_atividade.html')
+
+@app.route('/ask', methods=['POST', 'GET'])
+@login_required
+def ask():
+    if request.method == 'POST':
+        data = request.json
+        user_type = 'deficiente'
+        user_id = data['user_id']
+        student_query = data['question']
+        response_text = generate_assistant_response(user_id, student_query)
+
+        if user_type == 'deficiente':
+            speech_file_path = Path(__file__).parent / "speech.mp3"
+            tts_response = client.audio.speech.create(
+                model="tts-1",
+                voice="fable",
+                input=response_text)
+            
+            tts_response.stream_to_file(speech_file_path)
+            return send_file(speech_file_path, as_attachment=True, mimetype='audio/mp3')
+        else:
+            return jsonify({"response": response_text})
+    return render_template('ask.html')
 
 
 if __name__ == '__main__':

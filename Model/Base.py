@@ -191,6 +191,8 @@ class RespostaAluno(Base):
             data = RespostaAluno(resposta = resposta.resposta, questao_id = resposta.questao_id, aluno_id = resposta.aluno_id, atividade_id = resposta.atividade_id, status = resposta.status)
             session.add(data)
 
+            resposta.pontuacao = grupo.pontuacao
+
             return resposta
             # print(resposta)
             # session.add(resposta)
@@ -235,6 +237,7 @@ class QuestaoModel(Base):
     @staticmethod
     def get_by_atividade_id(session, id):
         return session.query(QuestaoModel).filter(QuestaoModel.id_atividade == id).all()
+    
 
             
 
