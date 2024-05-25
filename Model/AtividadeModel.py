@@ -3,10 +3,8 @@ from sqlalchemy import *
 import uuid
 from datetime import datetime
 from Model.Base import Base
-from Model.AlunoModel import aluno_atividade_association
+from Model.AlunoModel import aluno_atividade_association, generate_uuid
 
-def generate_uuid():
-    return str(uuid.uuid4())
 
 class AtividadeModel(Base):
     __tablename__ = "atividades"
@@ -25,16 +23,3 @@ class AtividadeModel(Base):
             "created_at": self.created_at,
             "questoes": [questao.to_dict() for questao in self.questoes]
         }
-    
-    @staticmethod
-    def get_by_id(session, id):
-        return session.query(AtividadeModel).filter(AtividadeModel.id == id).first()
-    
-    @staticmethod
-    def get_all(session):
-        return session.query(AtividadeModel).all()
-    
-    @staticmethod
-    def create(session, atividade):
-        with session.begin():
-            session.add(atividade)

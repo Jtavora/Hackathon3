@@ -7,12 +7,12 @@ from Model.Base import Base
 def generate_uuid():
     return str(uuid.uuid4())
 
-aluno_atividade_association = Table(
-    'aluno_atividade', Base.metadata,
-    Column('aluno_id', String(36), ForeignKey('alunos.id')),
-    Column('atividade_id', String(36), ForeignKey('atividades.id')),
-    UniqueConstraint('aluno_id', 'atividade_id', name='uix_aluno_atividade')
-)
+# aluno_atividade_association = Table(
+#     'aluno_atividade', Base.metadata,
+#     Column('aluno_id', String(36), ForeignKey('alunos.id')),
+#     Column('atividade_id', String(36), ForeignKey('atividades.id')),
+#     UniqueConstraint('aluno_id', 'atividade_id', name='uix_aluno_atividade')
+# )
 
 class AlunoModel(Base):
     __tablename__ = "alunos"
@@ -38,7 +38,7 @@ class AlunoModel(Base):
         return session.query(AlunoModel).filter(AlunoModel.id == id).first()
     
     @staticmethod
-    def get_all(session):
+    def alunos_list(session):
         return session.query(AlunoModel).all()
     
     @staticmethod
@@ -53,3 +53,5 @@ class AlunoModel(Base):
     @staticmethod
     def get_aluno_atividades(session, id):
         return session.query(AlunoModel).filter(AlunoModel.id == id).first().atividades
+    
+
