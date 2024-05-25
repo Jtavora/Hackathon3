@@ -102,15 +102,40 @@ def resultado():
 @login_required
 def processar_respostas():
     if request.method == 'POST':
-        if 'resposta_questao' in request.files:
-            resposta = request.files['resposta_questao']
-            # Aqui você pode fazer o processamento necessário com a resposta
-            # Por exemplo, salvar o arquivo, extrair dados, etc.
-            flash('Resposta enviada com sucesso!', 'success')  # Flash de sucesso
-            return redirect(url_for('resultado'))
-        else:
-            flash('Nenhum arquivo enviado!', 'error')  # Flash de erro
-            return redirect(url_for('responder_questoes'))
+        # Obtemos os dados enviados pelo formulário
+        user_id = session.get('user_id')  # Usamos .get() para evitar erros se 'user_id' não estiver na sessão
+        atividade_id = request.form.get('atividade_id')  # Obtemos atividade_id do formulário
+        questao_id = request.form.get('questao_id')  # Obtemos questao_id do formulário
+        resposta_questao = request.form.get('resposta_questao')  # Obtemos a resposta enviada pelo formulário
+
+        print(user_id)
+        print(atividade_id)
+        print(questao_id)
+        print(resposta_questao)
+
+        # Construímos o payload para a requisição POST
+        payload = {
+            'aluno_id': user_id,
+            'atividade_id': atividade_id,
+            'questao_id': questao_id,
+            'resposta': resposta_questao
+        }
+
+        try:
+            response = requests.post('http://127.0.0.1:8000/resposta/', json=payload)
+            response.raise_for_status()  # Levanta uma exceção para códigos de status HTTP 4xx/5xx
+            flash('Respostas enviadas com sucesso!', 'success')
+            return redirect(url_for('index'))
+        except requests.exceptions.RequestException as e:
+            flash(f'Erro ao enviar respostas: {str(e)}', 'error')
+            try:
+                response = requests.get('http://127.0.0.1:8000/atividades/')
+                response.raise_for_status()
+                atividades = response.json().get('atividades', [])
+            except requests.exceptions.RequestException as e:
+                atividades = []
+                flash(f'Erro ao carregar atividades: {str(e)}', 'error')
+            return render_template('index.html', atividades=atividades, user_id=session['user_id'])
 
 @app.route('/criar_atividade', methods=['GET', 'POST'])
 @login_required

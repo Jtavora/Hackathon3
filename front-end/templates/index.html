@@ -16,9 +16,7 @@
         {% endif %}
     {% endwith %}
     {% for atividade in atividades %}
-        <h2>{{ atividade['name'] }}</h2> <!-- Corrigido: atividade['name'] -->
         {% for questao in atividade['questoes'] %}
-        <h1>{{questao.id}}</h1>
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Questão {{ questao.name }}</h5>
