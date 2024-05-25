@@ -1,9 +1,9 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import *
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Table, UniqueConstraint, DateTime
 import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from enum import Enum
+from enum import Enum as PyEnum
 
 Base = declarative_base()
 
@@ -105,7 +105,7 @@ grupo_aluno_association = Table(
 
 from sqlalchemy import Enum
 
-class StatusResposta(Enum):
+class StatusResposta(PyEnum):
     PENDENTE = "pendente"
     CORRETA = "correta"
     INCORRETA = "incorreta"
