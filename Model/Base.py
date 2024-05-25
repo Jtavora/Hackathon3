@@ -121,12 +121,6 @@ grupo_aluno_association = Table(
 
 from sqlalchemy import Enum
 
-class StatusResposta(PyEnum):
-    PENDENTE = "pendente"
-    CORRETA = "correta"
-    INCORRETA = "incorreta"
-
-
 class RespostaAluno(Base):
     __tablename__ = "respostas_aluno"
 
@@ -135,7 +129,7 @@ class RespostaAluno(Base):
     questao_id = Column(String(36), ForeignKey('questoes.id'))
     aluno_id = Column(String(36), ForeignKey('alunos.id'))
     atividade_id = Column(String(36), ForeignKey('atividades.id'))
-    status = Column(Enum(StatusResposta), default=StatusResposta.PENDENTE)
+    status = Column(String(300), nullable=False)
 
     def to_dict(self):
         return {
@@ -186,15 +180,20 @@ class RespostaAluno(Base):
 
             # Verifica se a resposta está correta
             if questao.gabarito == resposta.resposta:
-                resposta.status = StatusResposta.CORRETA
+                resposta.status = "correta"
                 grupo.sequencia_pontuacao += 1
                 grupo.pontuacao += questao.pontuacao
             else:
-                resposta.status = StatusResposta.INCORRETA
+                resposta.status = "incorreta"
                 grupo.sequencia_pontuacao = 0
 
             # Adiciona a resposta do aluno ao banco de dados
-            session.add(resposta)
+            data = RespostaAluno(resposta = resposta.resposta, questao_id = resposta.questao_id, aluno_id = resposta.aluno_id, atividade_id = resposta.atividade_id, status = resposta.status)
+            session.add(data)
+
+            return resposta
+            # print(resposta)
+            # session.add(resposta)
         
 class QuestaoModel(Base):
     __tablename__ = "questoes"

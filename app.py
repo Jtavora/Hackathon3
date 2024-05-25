@@ -44,6 +44,7 @@ class Resposta(BaseModel):
     questao_id : str
     aluno_id : str
     atividade_id : str
+    status : str = "pendente"
 
 
 
@@ -94,7 +95,8 @@ def get_atividades_and_questoes():
 
 @app.post("/resposta/", tags=["Resposta"])
 def enviar_resposta(resposta: Resposta):
-    retorno = resposta_controller.enviar_resposta(resposta)
+    resposta_data = Resposta(**resposta.dict())
+    retorno = resposta_controller.enviar_resposta(resposta_data)
     if retorno != None:
-        return {"message": "Resposta enviada com sucesso!", "questao": retorno.to_dict()}
+        return {"message": "Resposta enviada com sucesso!", "questao": retorno}
     return {"message": "Erro ao enviar resposta"}

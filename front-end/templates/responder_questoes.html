@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Responder Questões
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4 text-center">Responder Questões</h1>
+    <h1>{{user_id}}, {{atividade_id}}, {{questao_id}}</h1>
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="resposta_questao">Resposta (Arquivo .txt)</label>
+                    <input type="text" class="form-control-file" id="resposta_questao" name="resposta_questao">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Enviar Resposta</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

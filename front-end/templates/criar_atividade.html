@@ -1,0 +1,73 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Criar Atividade
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Criar Atividade</h1>
+        <form method="post" action="{{ url_for('criar_atividade') }}">
+            <div class="form-group">
+                <label for="titulo">Nome da Atividade</label>
+                <input type="text" class="form-control" id="titulo" name="titulo" required>
+            </div>
+            <div class="form-group">
+                <label for="descricao">Descrição da Atividade</label>
+                <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+            </div>
+            <hr>
+            <h3>Questões da Atividade</h3>
+            <div id="questoes-container">
+                <div class="questao-item">
+                    <div class="form-group">
+                        <label for="nome_questao">Nome da Questão</label>
+                        <input type="text" class="form-control" id="nome_questao" name="nome_questao[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gabarito_questao">Gabarito da Questão</label>
+                        <input type="text" class="form-control" id="gabarito_questao" name="gabarito_questao[]" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="enunciado_questao">Enunciado da Questão</label>
+                        <textarea class="form-control" id="enunciado_questao" name="enunciado_questao[]" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="pontuacao_questao">Pontuação da Questão</label>
+                        <input type="number" class="form-control" id="pontuacao_questao" name="pontuacao_questao[]" required>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary" id="adicionar-questao">Adicionar Questão</button>
+            <button type="submit" class="btn btn-primary mt-3">Criar Atividade</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('adicionar-questao').addEventListener('click', function() {
+            const questaoContainer = document.getElementById('questoes-container');
+            const questaoItem = document.createElement('div');
+            questaoItem.classList.add('questao-item');
+            questaoItem.innerHTML = `
+                <div class="form-group">
+                    <label for="nome_questao">Nome da Questão</label>
+                    <input type="text" class="form-control" id="nome_questao" name="nome_questao[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="gabarito_questao">Gabarito da Questão</label>
+                    <input type="text" class="form-control" id="gabarito_questao" name="gabarito_questao[]" required>
+                </div>
+                <div class="form-group">
+                    <label for="enunciado_questao">Enunciado da Questão</label>
+                    <textarea class="form-control" id="enunciado_questao" name="enunciado_questao[]" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="pontuacao_questao">Pontuação da Questão</label>
+                    <input type="number" class="form-control" id="pontuacao_questao" name="pontuacao_questao[]" required>
+                </div>
+                <hr>`;
+            questaoContainer.appendChild(questaoItem);
+        });
+    </script>
+{% endblock %}
