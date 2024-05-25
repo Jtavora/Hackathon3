@@ -188,7 +188,7 @@ class RespostaAluno(Base):
                 grupo.sequencia_pontuacao = 0
 
             # Adiciona a resposta do aluno ao banco de dados
-            data = RespostaAluno(resposta = resposta.resposta, questao_id = resposta.questao_id, aluno_id = resposta.aluno_id, atividade_id = resposta.atividade_id, status = resposta.status)
+            data = RespostaAluno(resposta = resposta.resposta, questao_id = resposta.questao_id, aluno_id = resposta.aluno_id, atividade_id = resposta.atividade_id, status = resposta.status, pontuacao = grupo.pontuacao)
             session.add(data)
 
             return resposta
@@ -235,6 +235,7 @@ class QuestaoModel(Base):
     @staticmethod
     def get_by_atividade_id(session, id):
         return session.query(QuestaoModel).filter(QuestaoModel.id_atividade == id).all()
+    
 
             
 

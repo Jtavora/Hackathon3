@@ -45,6 +45,7 @@ class Resposta(BaseModel):
     aluno_id : str
     atividade_id : str
     status : str = "pendente"
+    pontuacao: int
 
 
 

@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Model.Base import QuestaoModel
+from Model.Base import QuestaoModel, GrupoAtividadeModel
 from dotenv import load_dotenv
 import os
 
@@ -38,3 +38,7 @@ class QuestoesController:
             questao.resposta = resposta
             session.commit()
         return questao
+    
+    def get_pontuacao_grupo(self, usuario_id, atividade_id):
+        with self.Session() as session:
+            pontuacao = GrupoAtividadeModel.retorna_pontuacao(session, usuario_id, atividade_id)
