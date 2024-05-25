@@ -21,3 +21,8 @@ class AtividadeController:
         with self.Session() as session:
             id = AtividadeModel.get_atividade_by_name(session, name)
         return id
+
+    def get_atividades_and_questoes_list(self):
+        with self.Session() as session:
+            atividades = AtividadeModel.atividades_list(session)
+        return atividades

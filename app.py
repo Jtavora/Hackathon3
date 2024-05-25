@@ -62,3 +62,8 @@ def post_atividade(atividade: Atividade):
         questao_controller.create_questao(nova_questao)
 
     return {"message": "Atividade created successfully!"}
+
+@app.get("/atividades/", tags=["Atividades"])
+def get_atividades_and_questoes():
+    atividades = atividade_controller.get_atividades_and_questoes_list()
+    return {"atividades": [atividade.to_dict() for atividade in atividades]}

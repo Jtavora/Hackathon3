@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum as PyEnum
+from sqlalchemy.orm import joinedload
 
 Base = declarative_base()
 
@@ -86,7 +87,15 @@ class AtividadeModel(Base):
     @staticmethod
     def get_atividade_by_name(session, name):
         return session.query(AtividadeModel).filter(AtividadeModel.name == name).first().id
-            
+    
+    @staticmethod
+    def get_all(session):
+        return session.query(AtividadeModel).all()
+    
+    @staticmethod
+    def atividades_list(session):
+        return session.query(AtividadeModel).options(joinedload(AtividadeModel.questoes)).all()
+    
 class GrupoAtividadeModel(Base):
     __tablename__="grupo_atividade"
 
@@ -140,10 +149,11 @@ class QuestaoModel(Base):
             "id": self.id,
             "name": self.name,
             "created_at": self.created_at,
-            "updated_at": self.updated_at,
-            "resposta": self.resposta,
-            "id_atividade": self.id_atividade
+            "gabarito": self.gabarito,
+            "enunciado": self.enunciado,
+            "pontuacao": self.pontuacao
         }
+
     
     @staticmethod
     def get_by_id(session, id):
