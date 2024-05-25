@@ -3,14 +3,17 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import subprocess
 from Controller.AlunoController import AlunoController
-from Model.Base import AlunoModel, AtividadeModel
+from Model.Base import AlunoModel, AtividadeModel, QuestaoModel
 from Controller.AtividadeController import AtividadeController
 from Model.Base import QuestaoModel
 from Controller.QuestoesController import QuestoesController
+from Controller.RespostaController import RespostaController
 
 aluno_controller = AlunoController()
 atividade_controller = AtividadeController()
 questao_controller = QuestoesController()
+resposta_controller = RespostaController()
+
 
 
 app = FastAPI()
@@ -19,6 +22,7 @@ class Aluno(BaseModel):
     name: str
     email: str
     login: str
+    senha: str
 
 class Questao(BaseModel):
     name: str
@@ -31,11 +35,31 @@ class Atividade(BaseModel):
     questoes: list[Questao]
     descricao: str
 
+class Login(BaseModel):
+    login: str
+    senha: str
+
+class Resposta(BaseModel):
+    resposta : str
+    questao_id : str
+    aluno_id : str
+    atividade_id : str
+
+
 
 @app.get("/", tags=["Root"])
 def return_status():
     """Retorna uma mensagem de boas-vindas."""
     return {"message": "Welcome to the API!"}
+
+@app.post("/login/", tags=["Alunos"])
+def login(login: Login):
+    """Realiza o login de um aluno."""
+    aluno = aluno_controller.get_login(login.login)
+    if aluno.senha == login.senha:
+        return {"id": aluno.id}
+    else:
+        return {"message": "Login failed!"}
 
 @app.post("/alunos/", tags=["Alunos"])
 def create_aluno(aluno: Aluno):
@@ -67,3 +91,10 @@ def post_atividade(atividade: Atividade):
 def get_atividades_and_questoes():
     atividades = atividade_controller.get_atividades_and_questoes_list()
     return {"atividades": [atividade.to_dict() for atividade in atividades]}
+
+@app.post("/resposta/", tags=["Resposta"])
+def enviar_resposta(resposta: Resposta):
+    retorno = resposta_controller.enviar_resposta(resposta)
+    if retorno != None:
+        return {"message": "Resposta enviada com sucesso!", "questao": retorno.to_dict()}
+    return {"message": "Erro ao enviar resposta"}
