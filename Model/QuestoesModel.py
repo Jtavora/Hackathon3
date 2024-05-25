@@ -3,7 +3,6 @@ from sqlalchemy import *
 import uuid
 from datetime import datetime
 from Model.Base import Base
-from Model.AtividadeModel import questoes_association
 
 def generate_uuid():
     return str(uuid.uuid4())
@@ -15,8 +14,10 @@ class QuestaoModel(Base):
     name = Column(String(100), nullable=False)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)
+    resposta = Column(String(300), nullable=False)
+    id_atividade = Column(String(36), ForeignKey('atividades.id'))
 
-    atividades = relationship("AtividadeModel", secondary=questoes_association, back_populates="questoes")
+    atividade = relationship("AtividadeModel", back_populates="questoes")
 
     def to_dict(self):
         return {
@@ -24,7 +25,8 @@ class QuestaoModel(Base):
             "name": self.name,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
-            "atividades": [atividade.to_dict() for atividade in self.atividades]
+            "resposta": self.resposta,
+            "id_atividade": self.id_atividade
         }
     
     @staticmethod
@@ -41,7 +43,5 @@ class QuestaoModel(Base):
             session.add(questao)
 
     @staticmethod
-    def update(session, questao):
-        with session.begin():
-            session.merge(questao)
-
+    def get_by_atividade_id(session, id):
+        return session.query(QuestaoModel).filter(QuestaoModel.id_atividade == id).all()
