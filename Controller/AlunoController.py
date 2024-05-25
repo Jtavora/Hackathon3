@@ -38,3 +38,8 @@ class AlunoController:
         with self.Session() as session:
             atividades = AlunoModel.get_aluno_atividades(session, id)
         return atividades
+    
+    def get_login(self, login):
+        with self.Session() as session:
+            aluno = AlunoModel.get_login(session, login)
+        return aluno

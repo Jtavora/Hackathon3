@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Atividades
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4 text-center">Atividades</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% for atividade in atividades %}
+        <h2>{{ atividade['name'] }}</h2> <!-- Corrigido: atividade['name'] -->
+        {% for questao in atividade['questoes'] %}
+        <h1>{{questao.id}}</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Questão {{ questao.name }}</h5>
+                <p class="card-text">{{ questao.enunciado }}</p>
+                {% if questao.status == 'pendente' %}
+                    <h6 class="card-text" style="color: orange;" >Status: {{questao.status}}</h6>
+                {% elif questao.status == 'correta' %}
+                    <h6 class="card-text" style="color: green;;">Status: {{questao.status}}</h6>
+                {% elif questao.status == 'incorreta' %}
+                    <h6 class="card-text" style="color: red;">Status: {{questao.status}}</h6>
+                {% endif %}
+                <a href="{{ url_for('responder_questoes', user_id=user_id, atividade_id=atividade.id, questao_id=questao.id)}}" class="btn btn-primary btn-block">Responder Questão</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
