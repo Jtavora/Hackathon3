@@ -78,15 +78,15 @@ class AtividadeModel(Base):
         }
 
     @staticmethod
-    def cria_atividade(session, nome: str, questoes: list, descricao: str = None):
+    def cria_atividade(session, nome: str, descricao: str = None):
         with session.begin():
             atividade = AtividadeModel(name=nome, descricao=descricao)
-            for questao in questoes:
-                questao = QuestaoModel(name=questao["name"], gabarito=questao["gabarito"], enunciado=questao["enunciado"], pontuacao=questao["pontuacao"], id_atividade=atividade.id)
-                atividade.questoes.append(questao)
             session.add(atividade)
-            return atividade
-
+    
+    @staticmethod
+    def get_atividade_by_name(session, name):
+        return session.query(AtividadeModel).filter(AtividadeModel.name == name).first().id
+            
 class GrupoAtividadeModel(Base):
     __tablename__="grupo_atividade"
 

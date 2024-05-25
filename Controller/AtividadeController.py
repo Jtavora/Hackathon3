@@ -15,4 +15,9 @@ class AtividadeController:
     
     def cria_atividade(self, atividade):
         with self.Session() as session:
-            AtividadeModel.create(session, atividade)
+            AtividadeModel.cria_atividade(session, atividade.name, atividade.descricao)
+    
+    def get_atividade_by_name(self, name):
+        with self.Session() as session:
+            id = AtividadeModel.get_atividade_by_name(session, name)
+        return id
