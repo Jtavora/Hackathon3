@@ -10,11 +10,10 @@ bootstrap = Bootstrap(app)
 app.secret_key = 'secret_key'  # Defina uma chave secreta para o Flash
 
 from openai import OpenAI
-from flask import Flask, request, jsonify, render_template, send_file
+from flask import jsonify, render_template, send_file
 from openai import OpenAI
 from pathlib import Path
 
-app = Flask(__name__)
 # client = OpenAI()
 
 
