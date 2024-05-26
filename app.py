@@ -1,13 +1,14 @@
+import subprocess
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import subprocess
+
 from Controller.AlunoController import AlunoController
-from Model.Base import AlunoModel, AtividadeModel, QuestaoModel
 from Controller.AtividadeController import AtividadeController
-from Model.Base import QuestaoModel
 from Controller.QuestoesController import QuestoesController
 from Controller.RespostaController import RespostaController
+from Model.Base import AlunoModel, AtividadeModel, QuestaoModel
 
 aluno_controller = AlunoController()
 atividade_controller = AtividadeController()

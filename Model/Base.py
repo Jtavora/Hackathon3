@@ -1,10 +1,11 @@
-from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, Table, UniqueConstraint, DateTime
 import uuid
 from datetime import datetime
-from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum as PyEnum
-from sqlalchemy.orm import joinedload
+
+from sqlalchemy import (Column, DateTime, Enum, ForeignKey, Integer, String,
+                        Table, UniqueConstraint)
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import joinedload, relationship
 
 Base = declarative_base()
 
@@ -120,6 +121,7 @@ grupo_aluno_association = Table(
 )
 
 from sqlalchemy import Enum
+
 
 class RespostaAluno(Base):
     __tablename__ = "respostas_aluno"

@@ -1,8 +1,10 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from Model.Base import QuestaoModel
-from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
