@@ -1,18 +1,18 @@
-import requests
-from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
-from flask_bootstrap import Bootstrap
-from functools import wraps
-from flask import session
 import json
+from functools import wraps
+
+import requests
+from flask import (Flask, flash, jsonify, redirect, render_template, request,
+                   send_file, session, url_for)
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 app.secret_key = 'secret_key'  # Defina uma chave secreta para o Flash
 
-from openai import OpenAI
-from flask import jsonify, render_template, send_file
-from openai import OpenAI
 from pathlib import Path
+
+from openai import OpenAI
 
 # client = OpenAI()
 
@@ -224,25 +224,28 @@ def criar_atividade():
     
     return render_template('criar_atividade.html')
 
-@app.route('/ask', methods=['POST'])
+@app.route('/ask', methods=['POST', 'GET'])
 def ask():
-    data = request.json
-    user_type = 'deficiente'
-    user_id = data['user_id']
-    student_query = data['question']
-    response_text = generate_assistant_response(user_id, student_query)
+    if request.method == 'POST':
+        data = request.json
+        user_type = 'deficiente'
+        user_id = data['user_id']
+        student_query = data['question']
+        response_text = generate_assistant_response(user_id, student_query)
 
-    if user_type == 'deficiente':
-        speech_file_path = Path(__file__).parent / "speech.mp3"
-        tts_response = client.audio.speech.create(
-            model="tts-1",
-            voice="fable",
-            input=response_text)
-        
-        tts_response.stream_to_file(speech_file_path)
-        return send_file(speech_file_path, as_attachment=True, mimetype='audio/mp3')
-    else:
-        return jsonify({"response": response_text})
+        if user_type == 'deficiente':
+            speech_file_path = Path(__file__).parent / "speech.mp3"
+            tts_response = client.audio.speech.create(
+                model="tts-1",
+                voice="fable",
+                input=response_text)
+            
+            tts_response.stream_to_file(speech_file_path)
+            return send_file(speech_file_path, as_attachment=True, mimetype='audio/mp3')
+        else:
+            return jsonify({"response": response_text})
+    
+    return render_template('ask.html') 
 
 
 if __name__ == '__main__':

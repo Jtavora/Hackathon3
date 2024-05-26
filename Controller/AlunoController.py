@@ -1,9 +1,10 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Model.Base import AlunoModel
-from Model.Base import aluno_atividade_association
-from dotenv import load_dotenv
-import os
+
+from Model.Base import AlunoModel, aluno_atividade_association
 
 load_dotenv()
 

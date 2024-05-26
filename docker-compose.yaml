@@ -3,7 +3,7 @@ version: '3.7'
 services:
   db:
     image: postgres:latest
-    container_name: db_bi
+    container_name: db_hackathon
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

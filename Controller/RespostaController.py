@@ -1,9 +1,10 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 from Model.Base import RespostaAluno
-from dotenv import load_dotenv
-from Model.Base import RespostaAluno
-import os
 
 load_dotenv()
 
